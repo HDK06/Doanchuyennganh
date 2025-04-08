@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../data/song_list.dart';
 import 'now_playing_screen.dart';
+import 'search_screen.dart';
+import 'favorites_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -63,6 +65,22 @@ class _HomeScreenState extends State<HomeScreen> {
           initialIndex: index,
         ),
       ),
+    );
+  }
+
+  // Điều hướng đến màn hình tìm kiếm
+  void _navigateToSearch() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SearchScreen()),
+    );
+  }
+
+  // Điều hướng đến màn hình yêu thích
+  void _navigateToFavorites() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const FavoritesScreen()),
     );
   }
 
@@ -148,11 +166,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: GestureDetector(
                           onTap: () =>
                               _onSongTapped(song, _recommendedSongs, index),
-                          child: _buildMusicItem(
-                            song.title,
-                            song.artist,
-                            song.coverImage,
-                          ),
+                          child: _buildMusicItem(song.title, song.artist,
+                              song.coverImage, song.isFavorite, () {
+                            setState(() {
+                              SongList.toggleFavorite(song);
+                            });
+                          }),
                         ),
                       );
                     },
@@ -200,11 +219,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: GestureDetector(
                           onTap: () =>
                               _onSongTapped(album, _popularAlbums, index),
-                          child: _buildAlbumItem(
-                            album.title,
-                            album.artist,
-                            album.coverImage,
-                          ),
+                          child: _buildAlbumItem(album.title, album.artist,
+                              album.coverImage, album.isFavorite, () {
+                            setState(() {
+                              SongList.toggleFavorite(album);
+                            });
+                          }),
                         ),
                       );
                     },
@@ -233,6 +253,13 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: 0,
         showSelectedLabels: false,
         showUnselectedLabels: false,
+        onTap: (index) {
+          if (index == 1) {
+            _navigateToSearch();
+          } else if (index == 2) {
+            _navigateToFavorites();
+          }
+        },
       ),
     );
   }
@@ -264,7 +291,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Widget xây dựng item bài hát
-  Widget _buildMusicItem(String title, String artist, String imagePath) {
+  Widget _buildMusicItem(String title, String artist, String imagePath,
+      bool isFavorite, VoidCallback onFavoritePressed) {
     return Container(
       width: 160,
       child: Column(
@@ -272,15 +300,39 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // Ảnh bài hát
           Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                image: DecorationImage(
-                  image: AssetImage(imagePath),
-                  fit: BoxFit.cover,
+            child: Stack(
+              children: [
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    image: DecorationImage(
+                      image: AssetImage(imagePath),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-              ),
+                // Nút yêu thích
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: InkWell(
+                      onTap: onFavoritePressed,
+                      child: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 8),
@@ -310,7 +362,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Widget xây dựng item album
-  Widget _buildAlbumItem(String title, String artist, String imagePath) {
+  Widget _buildAlbumItem(String title, String artist, String imagePath,
+      bool isFavorite, VoidCallback onFavoritePressed) {
     return Container(
       width: 160,
       child: Column(
@@ -318,15 +371,39 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           // Ảnh album
           Expanded(
-            child: Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                image: DecorationImage(
-                  image: AssetImage(imagePath),
-                  fit: BoxFit.cover,
+            child: Stack(
+              children: [
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    image: DecorationImage(
+                      image: AssetImage(imagePath),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-              ),
+                // Nút yêu thích
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: InkWell(
+                      onTap: onFavoritePressed,
+                      child: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(height: 8),

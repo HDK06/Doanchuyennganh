@@ -5,6 +5,8 @@ import 'package:t4/presentation/screen/register_screen.dart';
 import 'package:t4/presentation/screen/spash_screen.dart';
 import 'package:t4/presentation/screen/home_screen.dart';
 import 'package:t4/presentation/screen/now_playing_screen.dart';
+import 'package:t4/presentation/screen/search_screen.dart';
+import 'package:t4/presentation/screen/favorites_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -32,6 +34,8 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/home': (context) => const HomeScreen(),
+        '/search': (context) => const SearchScreen(),
+        '/favorites': (context) => const FavoritesScreen(),
       },
     );
   }

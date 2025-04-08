@@ -53,6 +53,13 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
     });
   }
 
+  // Thêm chức năng yêu thích
+  void _toggleFavorite() {
+    setState(() {
+      SongList.toggleFavorite(_currentSong);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,9 +86,16 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+                  // Thay thế nút more_vert bằng nút yêu thích
                   IconButton(
-                    icon: const Icon(Icons.more_vert, color: Colors.white),
-                    onPressed: () {},
+                    icon: Icon(
+                      _currentSong.isFavorite
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color:
+                          _currentSong.isFavorite ? Colors.red : Colors.white,
+                    ),
+                    onPressed: _toggleFavorite,
                   ),
                 ],
               ),
