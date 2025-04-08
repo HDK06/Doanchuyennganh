@@ -2,12 +2,16 @@ class Song {
   final String title;
   final String artist;
   final String coverImage;
-  final String audioPath;
+  final String assetPath;
+  final String lyrics;
+  bool isFavorite;
 
-  const Song({
+  Song({
     required this.title,
     required this.artist,
     required this.coverImage,
-    required this.audioPath,
+    required this.assetPath,
+    required this.lyrics,
+    this.isFavorite = false,
   });
 }

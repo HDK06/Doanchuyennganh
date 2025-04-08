@@ -1,105 +1,151 @@
-import 'dart:math';
+import 'package:t4/models/song.dart';
 
-class Song {
-  final String title;
-  final String artist;
-  final String coverImage;
-  final String audioPath;
-
-  const Song({
-    required this.title,
-    required this.artist,
-    required this.coverImage,
-    required this.audioPath,
-  });
-}
-
-class SongList {
-  static final Random _random = Random();
-
-  static final List<Song> _allSongs = [
-    const Song(
-      title: 'Ái Nộ',
-      artist: 'Masew, Khôi Vũ',
-      coverImage: 'assets/images/ai_no.png',
-      audioPath: 'assets/audio/ai_no.mp3',
-    ),
-    const Song(
-      title: 'Dữ Liệu Quý',
-      artist: 'Dương Domic',
-      coverImage: 'assets/images/du_lieu_quy.png',
-      audioPath: 'assets/audio/du_lieu_quy.mp3',
-    ),
-    const Song(
-      title: 'Bad Guy',
-      artist: 'Billie Eilish',
-      coverImage: 'assets/images/bad_guy.png',
-      audioPath: 'assets/audio/bad_guy.mp3',
-    ),
-    const Song(
-      title: 'Chìm Sâu',
-      artist: 'RPT MCK',
-      coverImage: 'assets/images/chim_sau.png',
-      audioPath: 'assets/audio/chim_sau.mp3',
-    ),
-    const Song(
-      title: 'Tại Vì Sao',
-      artist: 'RPT MCK',
-      coverImage: 'assets/images/tai_vi_sao.png',
-      audioPath: 'assets/audio/tai_vi_sao.mp3',
-    ),
-    const Song(
-      title: 'Chúng Ta Của Hiện Tại',
-      artist: 'Sơn Tùng M-TP',
-      coverImage: 'assets/images/chung_ta_cua_hien_tai.png',
-      audioPath: 'assets/audio/chung_ta_cua_hien_tai.mp3',
-    ),
-    const Song(
-      title: 'Đơn Giản',
-      artist: 'Low G',
-      coverImage: 'assets/images/don_gian.png',
-      audioPath: 'assets/audio/don_gian.mp3',
-    ),
-    const Song(
-      title: 'Flower',
-      artist: 'Jisso',
-      coverImage: 'assets/images/flower.png',
-      audioPath: 'assets/audio/flower.mp3',
-    ),
-    const Song(
-      title: 'See Tình',
-      artist: 'Hoàng Thùy Linh',
-      coverImage: 'assets/images/see_tinh.png',
-      audioPath: 'assets/audio/see_tinh.mp3',
-    ),
-    const Song(
-      title: 'Exit Sign',
-      artist: 'HIEUTHUHAI',
-      coverImage: 'assets/images/exit_sign.png',
-      audioPath: 'assets/audio/exit_sign.mp3',
-    ),
-    const Song(
-      title: 'See You Again',
-      artist: 'Wiz Khalifa',
-      coverImage: 'assets/images/see_you_again.png',
-      audioPath: 'assets/audio/see_you_again.mp3',
-    ),
-    const Song(
-      title: 'See You Again',
-      artist: 'Wiz Khalifa',
-      coverImage: 'assets/images/see_you_again.png',
-      audioPath: 'assets/audio/see_you_again.mp3',
-    ),
-  ];
-
-  // Lấy danh sách bài hát ngẫu nhiên
-  static List<Song> getRandomSongs({int count = 4}) {
-    List<Song> shuffledList = List.from(_allSongs)..shuffle(_random);
-    return shuffledList.sublist(0, count.clamp(0, _allSongs.length));
-  }
-
-  // Lấy tất cả bài hát
-  static List<Song> getAllSongs() {
-    return List.from(_allSongs);
-  }
-}
+final List<Song> songList = [
+  Song(
+    title: 'Ái Nộ',
+    artist: 'Masew, Khôi Vũ',
+    coverImage: 'assets/images/ai_no.png',
+    assetPath: 'assets/audio/ai_no.mp3',
+    lyrics: '''Em đi qua con phố
+Đèn xanh đỏ vẫn sáng
+Anh như đang ngồi đó
+Nhưng tim thì vắng lặng...''',
+  ),
+  Song(
+    title: 'Chìm Sâu',
+    artist: 'RPT MCK',
+    coverImage: 'assets/images/chim_sau.png',
+    assetPath: 'assets/audio/chim_sau.mp3',
+    lyrics: '''Em đi qua con phố
+Đèn xanh đỏ vẫn sáng
+Anh như đang ngồi đó
+Nhưng tim thì vắng lặng...''',
+  ),
+  Song(
+    title: 'Tại Vì Sao',
+    artist: 'RPT MCK',
+    coverImage: 'assets/images/tai_vi_sao.png',
+    assetPath: 'assets/audio/tai_vi_sao.mp3',
+    lyrics: '''Em đi qua con phố
+Đèn xanh đỏ vẫn sáng
+Anh như đang ngồi đó
+Nhưng tim thì vắng lặng...''',
+  ),
+  Song(
+    title: 'Chúng Ta Của Hiện Tại',
+    artist: 'Sơn Tùng M-TP',
+    coverImage: 'assets/images/chung_ta_cua_hien_tai.png',
+    assetPath: 'assets/audio/chung_ta_cua_hien_tai.mp3',
+    lyrics: '''Em đi qua con phố
+Đèn xanh đỏ vẫn sáng
+Anh như đang ngồi đó
+Nhưng tim thì vắng lặng...''',
+  ),
+  Song(
+    title: 'Đơn Giản',
+    artist: 'Low G',
+    coverImage: 'assets/images/don_gian.png',
+    assetPath: 'assets/audio/don_gian.mp3',
+    lyrics: '''Em đi qua con phố
+Đèn xanh đỏ vẫn sáng
+Anh như đang ngồi đó
+Nhưng tim thì vắng lặng...''',
+  ),
+  Song(
+    title: 'Flower',
+    artist: 'Jisso',
+    coverImage: 'assets/images/flower.png',
+    assetPath: 'assets/audio/flower.mp3',
+    lyrics: '''Em đi qua con phố
+Đèn xanh đỏ vẫn sáng
+Anh như đang ngồi đó
+Nhưng tim thì vắng lặng...''',
+  ),
+  Song(
+    title: 'See Tình',
+    artist: 'Hoàng Thùy Linh',
+    coverImage: 'assets/images/see_tinh.png',
+    assetPath: 'assets/audio/see_tinh.mp3',
+    lyrics: '''Em đi qua con phố
+Đèn xanh đỏ vẫn sáng
+Anh như đang ngồi đó
+Nhưng tim thì vắng lặng...''',
+  ),
+  Song(
+    title: 'Exit Sign',
+    artist: 'HIEUTHUHAI',
+    coverImage: 'assets/images/exit_sign.png',
+    assetPath: 'assets/audio/exit_sign.mp3',
+    lyrics:
+        '''Anh không nhớ nổi lần cuối cùng anh nhìn vào mắt em đó là từ bao giờ
+Em từng trách anh chỉ ôm ước mơ còn không sợ mất em thì làm sao chờ
+Lúc đó anh có xin lỗi hay không thì kết quả nó cũng như nhau mà
+Cuối cùng thì hai ta đều ích kỷ nông nổi tự trọng cao mà
+Ta từng bắt gặp nhau ở khắp Sài Gòn chắc là lúc còn yêu dù muốn tránh cũng khó
+Không thể tin là mình chưa từng gặp lại sau khi mà anh bước qua cánh cửa đó
+Tình yêu mình từng là ánh lửa đỏ từng là chim sẻ cố đập cánh giữa gió
+Cố gắng sống hai cuộc đời chắc là thằng nhóc này muốn làm thần thánh nữa đó
+Sao giờ em xuất hiện tại đây vầy
+Cuối hàng khán giả và cánh tay vẫy
+Em từng cùng anh đứng ở hậu trường và cùng anh về nhà sau khi mà bay nhảy
+Cũng từng nói em không có gạt anh em thích nhạc anh and you know the vision
+Anh từng hứa là mình không nhạt đâu sẽ không lạc nhau cùng bên nhau vào khi cần
+Ngay lúc đó anh chỉ muốn lao xuống anh thật sự tò mò em dạo này khoẻ không
+Nhưng mà sao hôm nay đi khuya vậy
+Ba mẹ biết là ba mẹ sẽ trông
+Anh từng mong em hạnh phúc tới khi em nở nụ cười anh như bị đâm mười nhát
+Khi anh đứng trên sân khấu một mình coi em đứng cạnh cùng với một người khác
+Em hiểu rằng chúng ta không ai là sai (hah)
+Chỉ là em không muốn em mãi sẽ là lựa chọn thứ hai
+Mãi sau những điều anh cho là lý do để anh tồn tại
+Vậy đâu còn lý do để em ở lại
+Đây sẽ là lý do em sẽ thôi đắn đo cứ ôm mộng hoài
+So thanks for showing me the exit sign
+Chưa nói tới đúng sai nhưng chuyến xe dừng lại là do chân anh đặt trên phanh
+Anh đã không ngần ngại chia con đường làm hai vì anh nghĩ là anh quên nhanh
+Gặp một cô gái mới coi là cả thế giới
+Viết tên cả hai lên tranh không dễ nhiều đêm trắng để chờ lên nắng giờ thì kí ức gọi tên anh nên là cứ rót đi
+Bàn vẫn ướt mặc dù có lót ly
+Ước gì có thể paste nổi đau này qua chỗ khác nhưng không nó nhân lên nó chỉ copy
+Thật khó để nhìn xung quanh khi chỉ trông ngóng vì sao như Xi ôn cốp xki
+Để bây giờ em đi mất liên kết còn lại tồn tại giữa anh và em là chung một tài khoản Shopee
+Gom hết tất cả về em xong rồi thiêu nhanh
+Giọng em vang lên trước khi môi em mở găm thẳng vào anh như là siêu thanh
+Không cần phải là người giỏi toán đủ biết đây không phải đổi ngang
+Em chỉ mất đi một thằng thất bại anh mất đi một người yêu anh
+Tám ngàn năm trăm mười lăm lần nói anh yêu em ở trong mess nếu mà em search
+Cũng tới lúc mình phải quên đi thôi dù từng có với nhau là rất nhiều cam kết
+Tiếc nhất không phải chia tay mà là không yêu em nhiều hơn trước lúc tình yêu chết
+Có lẽ phải ghi tên em vào credit vì bài nhạc nào anh cũng viết về em hết
+Em hiểu rằng chúng ta không ai là sai (hah)
+Chỉ là em không muốn em mãi sẽ là lựa chọn thứ hai
+Mãi sau những điều anh cho là lý do để anh tồn tại
+Vậy đâu còn lý do để em ở lại (đâu cần một lý do ở lại)
+Đây sẽ là lý do em sẽ thôi đắn đo cứ ôm mộng hoài
+So thanks for showing me the exit sign
+Hah hãy gìn giữ nhau trong những kỉ niệm
+I thank you for finally showing me the exit sign hmm
+Thanks for showing me the exit sign...''',
+  ),
+  Song(
+    title: 'See You Again',
+    artist: 'Wiz Khalifa',
+    coverImage: 'assets/images/see_you_again.png',
+    assetPath: 'assets/audio/see_you_again.mp3',
+    lyrics: '''Em đi qua con phố
+Đèn xanh đỏ vẫn sáng
+Anh như đang ngồi đó
+Nhưng tim thì vắng lặng...''',
+  ),
+  Song(
+    title: 'Dữ Liệu Quý',
+    artist: 'Dương Domic',
+    coverImage: 'assets/images/du_lieu_quy.png',
+    assetPath: 'assets/audio/du_lieu_quy.mp3',
+    lyrics: '''Em đi qua con phố
+Đèn xanh đỏ vẫn sáng
+Anh như đang ngồi đó
+Nhưng tim thì vắng lặng...''',
+  ),
+  // Bạn có thể thêm nhiều bài hát khác tại đây
+];

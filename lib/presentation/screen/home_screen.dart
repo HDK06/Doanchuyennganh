@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:t4/models/song.dart';
+import 'package:t4/presentation/screen/FavoriteScreen.dart';
+import 'package:t4/presentation/screen/search_screen.dart';
 import '../../data/song_list.dart';
 import 'now_playing_screen.dart';
 
@@ -15,9 +18,9 @@ class _HomeScreenState extends State<HomeScreen> {
   late User? _user;
   int _selectedTabIndex = 0;
 
-  // Danh sách bài hát được đề xuất ngẫu nhiên
+  // Danh sách bài hát
   late List<Song> _recommendedSongs;
-  // Danh sách album nổi tiếng ngẫu nhiên
+  // Danh sách album
   late List<Song> _popularAlbums;
 
   @override
@@ -25,16 +28,9 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     _user = _auth.currentUser;
 
-    // Tạo danh sách đề xuất ngẫu nhiên
-    _shuffleRecommendations();
-  }
-
-  // Hàm tạo danh sách đề xuất ngẫu nhiên
-  void _shuffleRecommendations() {
-    // Lấy 4 bài hát ngẫu nhiên
-    _recommendedSongs = SongList.getRandomSongs(count: 6);
-    // Lấy 4 album ngẫu nhiên
-    _popularAlbums = SongList.getRandomSongs(count: 6);
+    // Dùng toàn bộ danh sách bài hát thay vì random
+    _recommendedSongs = songList;
+    _popularAlbums = songList;
   }
 
   Future<void> _signOut() async {
@@ -52,7 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Xử lý khi người dùng nhấn vào một bài hát
   void _onSongTapped(Song song, List<Song> songList, int index) {
     Navigator.push(
       context,
@@ -77,11 +72,8 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
-
-                // Hàng đầu với avatar và tab
                 Row(
                   children: [
-                    // Avatar người dùng
                     GestureDetector(
                       onTap: _signOut,
                       child: const CircleAvatar(
@@ -89,10 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Icon(Icons.person, color: Colors.grey),
                       ),
                     ),
-
                     const SizedBox(width: 15),
-
-                    // Tab Tất Cả, Nhạc, Podcasts
                     Expanded(
                       child: Row(
                         children: [
@@ -106,34 +95,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 30),
-
-                // Phần Được Đề Xuất Cho Hôm Nay
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Được Đề Xuất Cho Hôm Nay',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.refresh, color: Color(0xFF31C934)),
-                      onPressed: () {
-                        setState(() {
-                          _shuffleRecommendations();
-                        });
-                      },
-                    ),
-                  ],
+                const Text(
+                  'Được Đề Xuất Cho Hôm Nay',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-
                 const SizedBox(height: 15),
-
-                // Danh sách bài hát được đề xuất - ListView cuộn ngang
                 SizedBox(
                   height: 200,
                   child: ListView.builder(
@@ -158,34 +128,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                 ),
-
                 const SizedBox(height: 25),
-
-                // Phần Album Và Đĩa Nổi Tiếng
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Album Và Đĩa Nổi Tiếng',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.refresh, color: Color(0xFF31C934)),
-                      onPressed: () {
-                        setState(() {
-                          _shuffleRecommendations();
-                        });
-                      },
-                    ),
-                  ],
+                const Text(
+                  'Album Và Đĩa Nổi Tiếng',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-
                 const SizedBox(height: 15),
-
-                // Danh sách album nổi tiếng - ListView cuộn ngang
                 SizedBox(
                   height: 200,
                   child: ListView.builder(
@@ -218,26 +169,46 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Color(0xFF31C934)),
+            icon: Icon(Icons.home),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search, color: Colors.grey),
+            icon: Icon(Icons.search),
             label: '',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border, color: Colors.grey),
+            icon: Icon(Icons.favorite_border),
             label: '',
           ),
         ],
-        currentIndex: 0,
+        currentIndex: _selectedTabIndex,
+        onTap: (index) {
+          if (index == 1) {
+            // Mở màn hình tìm kiếm
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => SearchScreen()),
+            );
+          } else if (index == 2) {
+            // Mở màn hình yêu thích
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FavoriteScreen()),
+            );
+          } else {
+            setState(() {
+              _selectedTabIndex = index;
+            });
+          }
+        },
         showSelectedLabels: false,
         showUnselectedLabels: false,
+        selectedItemColor: const Color(0xFF31C934),
+        unselectedItemColor: Colors.grey,
       ),
     );
   }
 
-  // Widget xây dựng nút tab
   Widget _buildTabButton(String text, int index) {
     bool isSelected = _selectedTabIndex == index;
     return GestureDetector(
@@ -263,14 +234,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Widget xây dựng item bài hát
   Widget _buildMusicItem(String title, String artist, String imagePath) {
     return Container(
       width: 160,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Ảnh bài hát
           Expanded(
             child: Container(
               width: double.infinity,
@@ -284,7 +253,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          // Tên bài hát
           Text(
             title,
             style: const TextStyle(
@@ -294,7 +262,6 @@ class _HomeScreenState extends State<HomeScreen> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          // Tên nghệ sĩ
           Text(
             artist,
             style: const TextStyle(
@@ -309,14 +276,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Widget xây dựng item album
   Widget _buildAlbumItem(String title, String artist, String imagePath) {
     return Container(
       width: 160,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Ảnh album
           Expanded(
             child: Container(
               width: double.infinity,
@@ -330,7 +295,6 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const SizedBox(height: 8),
-          // Tên album
           Text(
             title,
             style: const TextStyle(
@@ -340,7 +304,6 @@ class _HomeScreenState extends State<HomeScreen> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          // Tên nghệ sĩ
           Text(
             artist,
             style: const TextStyle(

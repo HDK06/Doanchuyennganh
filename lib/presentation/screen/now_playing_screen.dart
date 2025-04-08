@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../data/song_list.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:t4/models/song.dart';
+import 'package:t4/presentation/screen/lyric_screen.dart';
 
 class NowPlayingScreen extends StatefulWidget {
   final Song song;
@@ -18,39 +20,82 @@ class NowPlayingScreen extends StatefulWidget {
 }
 
 class _NowPlayingScreenState extends State<NowPlayingScreen> {
+  late AudioPlayer _audioPlayer;
   late Song _currentSong;
   late int _currentIndex;
-  bool _isPlaying = true;
-  double _currentSliderValue = 20;
+
+  Duration _currentPosition = Duration.zero;
+  Duration _totalDuration = const Duration(seconds: 100); // default ban đầu
+  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-    _currentSong = widget.song;
+    _audioPlayer = AudioPlayer();
     _currentIndex = widget.initialIndex;
+    _currentSong = widget.song;
+    _initializePlayer(_currentSong.assetPath);
+
+    // Nghe sự kiện thời lượng và vị trí
+    _audioPlayer.positionStream.listen((position) {
+      setState(() {
+        _currentPosition = position;
+      });
+    });
+    _audioPlayer.durationStream.listen((duration) {
+      if (duration != null) {
+        setState(() {
+          _totalDuration = duration;
+        });
+      }
+    });
+  }
+
+  Future<void> _initializePlayer(String assetPath) async {
+    try {
+      await _audioPlayer.setAsset(assetPath);
+      _audioPlayer.play();
+      setState(() {
+        _isPlaying = true;
+      });
+    } catch (e) {
+      print('Lỗi khi tải file audio: $e');
+    }
   }
 
   void _playNextSong() {
-    setState(() {
-      _currentIndex = (_currentIndex + 1) % widget.songList.length;
-      _currentSong = widget.songList[_currentIndex];
-      _currentSliderValue = 0;
-    });
+    _currentIndex = (_currentIndex + 1) % widget.songList.length;
+    _currentSong = widget.songList[_currentIndex];
+    _initializePlayer(_currentSong.assetPath);
   }
 
   void _playPreviousSong() {
-    setState(() {
-      _currentIndex =
-          (_currentIndex - 1 + widget.songList.length) % widget.songList.length;
-      _currentSong = widget.songList[_currentIndex];
-      _currentSliderValue = 0;
-    });
+    _currentIndex =
+        (_currentIndex - 1 + widget.songList.length) % widget.songList.length;
+    _currentSong = widget.songList[_currentIndex];
+    _initializePlayer(_currentSong.assetPath);
   }
 
   void _togglePlay() {
+    if (_isPlaying) {
+      _audioPlayer.pause();
+    } else {
+      _audioPlayer.play();
+    }
     setState(() {
       _isPlaying = !_isPlaying;
     });
+  }
+
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    return "${twoDigits(duration.inMinutes)}:${twoDigits(duration.inSeconds % 60)}";
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
   }
 
   @override
@@ -63,7 +108,7 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Phần header với nút quay lại
+              // Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -85,10 +130,9 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 40),
 
-              // Hình ảnh album
+              // Album image
               Expanded(
                 child: Center(
                   child: Container(
@@ -112,44 +156,82 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 40),
 
-              // Thông tin bài hát
-              Text(
-                _currentSong.title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _currentSong.artist,
-                style: const TextStyle(
-                  color: Colors.grey,
-                  fontSize: 16,
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              // Song info
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _currentSong.title,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _currentSong.artist,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 16,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      final wasFavorite = _currentSong.isFavorite;
+                      setState(() {
+                        _currentSong.isFavorite = !wasFavorite;
+                        widget.songList[_currentIndex].isFavorite =
+                            _currentSong.isFavorite;
+                      });
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            wasFavorite
+                                ? 'Đã xoá khỏi yêu thích'
+                                : 'Đã thêm vào yêu thích',
+                          ),
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                    icon: Icon(
+                      _currentSong.isFavorite
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color:
+                          _currentSong.isFavorite ? Colors.red : Colors.white,
+                    ),
+                  ),
+                ],
               ),
 
-              const SizedBox(height: 24),
-
-              // Thanh tiến trình
+              // Slider
               Slider(
-                value: _currentSliderValue,
+                value: _currentPosition.inSeconds
+                    .toDouble()
+                    .clamp(0.0, _totalDuration.inSeconds.toDouble()),
                 min: 0,
-                max: 100,
+                max: _totalDuration.inSeconds.toDouble(),
                 activeColor: const Color(0xFF31C934),
                 inactiveColor: Colors.grey.shade800,
                 onChanged: (value) {
-                  setState(() {
-                    _currentSliderValue = value;
-                  });
+                  final position = Duration(seconds: value.toInt());
+                  _audioPlayer.seek(position);
                 },
               ),
               Padding(
@@ -158,20 +240,19 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      _formatDuration(_currentSliderValue.toInt()),
+                      _formatDuration(_currentPosition),
                       style: const TextStyle(color: Colors.grey, fontSize: 12),
                     ),
                     Text(
-                      _formatDuration(100),
+                      _formatDuration(_totalDuration),
                       style: const TextStyle(color: Colors.grey, fontSize: 12),
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
 
-              // Các nút điều khiển
+              // Controls
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -211,20 +292,34 @@ class _NowPlayingScreenState extends State<NowPlayingScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 16),
+              // Nút xem lời bài hát
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => LyricsScreen(song: _currentSong),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.grey.shade900,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: const Text('Lời bài hát'),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  String _formatDuration(int seconds) {
-    // Giả lập thời gian dựa trên giá trị của slider (0-100)
-    final minutes = (seconds * 3 ~/ 100); // Giả sử bài hát dài 3 phút
-    final remainingSeconds = (seconds * 180 ~/ 100) % 60;
-
-    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 }

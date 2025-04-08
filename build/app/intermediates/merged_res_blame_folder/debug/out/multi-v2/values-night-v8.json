@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.t4.app-mergeDebugResources-29:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.example.t4.app-mergeDebugResources-31:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
-                    "source": "E:\\Mobile app\\t4\\android\\app\\src\\main\\res\\values-night\\styles.xml",
+                    "source": "C:\\xampp\\htdocs\\vippro\\Doanchuyennganh\\android\\app\\src\\main\\res\\values-night\\styles.xml",
                     "from": {
                         "startLines": "3,14",
                         "startColumns": "4,4",
